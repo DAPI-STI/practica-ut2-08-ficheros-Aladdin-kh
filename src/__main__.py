@@ -7,10 +7,10 @@ Este archivo NO se evalúa automáticamente.
 
 from pathlib import Path
 
-from .ex01_count_word import count_word_in_file
-from .ex02_write_final_grade import write_final_grade
-from .ex03_csv_average import csv_average
-from .ex04_phonebook import add_contact, get_phone, remove_contact
+from ex01_count_word import count_word_in_file
+from ex02_write_final_grade import write_final_grade
+from ex03_csv_average import csv_average
+from ex04_phonebook import add_contact, get_phone, remove_contact
 
 
 def main() -> None:

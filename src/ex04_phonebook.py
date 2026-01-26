@@ -42,7 +42,21 @@ def _load_phonebook(path: str | Path) -> dict[str, str]:
     - Usa `with open(..., encoding="utf-8") as f:`
     - Recorre línea a línea con `for line in f:`
     """
-    raise NotImplementedError("Implementa _load_phonebook(path)")
+    phonebook = {}
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            for linea in file:
+                l1 = linea.strip()
+                if not l1:
+                    continue
+                secc = l1.split(",")
+                if len(secc) != 2:
+                    raise ValueError("Línea mal formada")
+                name, phone = secc
+                phonebook[name.strip()] = phone.strip()
+    except FileNotFoundError:
+        pass
+    return phonebook
 
 
 def _save_phonebook(path: str | Path, phonebook: dict[str, str]) -> None:
@@ -54,7 +68,9 @@ def _save_phonebook(path: str | Path, phonebook: dict[str, str]) -> None:
     - Puedes guardar en cualquier orden.
     - Usa encoding="utf-8".
     """
-    raise NotImplementedError("Implementa _save_phonebook(path, phonebook)")
+    with open(path, "w", encoding="utf-8") as file:
+        for name, phone in phonebook.items():
+            file.write(f"{name},{phone}\n")
 
 
 def add_contact(path: str | Path, name: str, phone: str) -> None:
@@ -69,8 +85,12 @@ def add_contact(path: str | Path, name: str, phone: str) -> None:
     Pista:
     - load -> modificar dict -> save
     """
-    raise NotImplementedError("Implementa add_contact(path, name, phone)")
+    phonebook = _load_phonebook(path)
+    if not name.strip() or not phone.strip():
+        raise ValueError("El nombre y el teléfono no pueden estar vacíos")
 
+    phonebook[name.strip()] = phone.strip()
+    _save_phonebook(path, phonebook)
 
 def get_phone(path: str | Path, name: str) -> str | None:
     """
@@ -80,7 +100,8 @@ def get_phone(path: str | Path, name: str) -> str | None:
     - Si el fichero no existe, devuelve None (porque no hay contactos).
     - `name` se compara tras strip().
     """
-    raise NotImplementedError("Implementa get_phone(path, name)")
+    phonebook = _load_phonebook(path)
+    return phonebook.get(name.strip(), None)
 
 
 def remove_contact(path: str | Path, name: str) -> bool:
@@ -98,4 +119,11 @@ def remove_contact(path: str | Path, name: str) -> bool:
     Pista:
     - load -> borrar si existe -> save si cambió
     """
+    phonebook = _load_phonebook(path)
+    name = name.strip()
+    if name in phonebook:
+        del phonebook[name]
+        _save_phonebook(path, phonebook)
+        return True
+    return False
     raise NotImplementedError("Implementa remove_contact(path, name)")
